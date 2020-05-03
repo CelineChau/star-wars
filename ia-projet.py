@@ -1,17 +1,15 @@
 # Retrieve random position_sample row from dataset
 
-# Algo génétique : find p1-p6, first values = 1
+# Algo génétique : generate individus, first values = 1
 # mutation
 # croisement
 
-# Check with fitness function
+# Check individus with fitness function
 
-# Sort from fitness
-
-# Store solution
+# Store individus
 
 # Use p1-p6 for the rest of position samples 
 
-# Store difference between sample and calculated x and y
+# Store difference between sample and calculated individus
 
 # Find the more accurate value 
