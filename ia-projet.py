@@ -18,10 +18,16 @@ class Individu:
 
     # Return euclidien distance
     def fitness(self, x, y):
+<<<<<<< HEAD
         res = 0
         res += math.pow(self.x - x, 2)
         res += math.pow(self.y - y, 2)
         return math.sqrt(res)
+=======
+        X = [self.x, x]
+        Y = [self.y, y]
+        return math.sqrt(math.sum((Y - X) ** 2))
+>>>>>>> 8a5ca81b05338f3fdaa877dbbafb8d21021d6271
 
 
 def main(csv_path):
