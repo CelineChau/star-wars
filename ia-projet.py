@@ -17,7 +17,7 @@ class Individu:
 
     # Return euclidien distance
     def fitness(self, x, y):
-        X = [self.x, x
+        X = [self.x, x]
         Y = [self.y, y]
         return math.sqrt(math.sum((Y - X) ** 2))
 
