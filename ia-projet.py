@@ -3,9 +3,10 @@ import pandas as pd
 import math
 
 class Individu:
-    def __init__(self, t, x, y):
+    def __init__(self, t, x, y, params=None):
         self.t = t
-        self.params = [random.randint(-10, 10) for i in range(6)]
+        self.params = params if params else [random.randint(-10, 10) for i in range(6)]
+        print(self.params)
         self.x, self.y = self.calcul_pos()
         self.dist = self.fitness(x, y)
 
@@ -17,16 +18,24 @@ class Individu:
 
     # Return euclidien distance
     def fitness(self, x, y):
-        X = [self.x, x
-        Y = [self.y, y]
-        return math.sqrt(math.sum((Y - X) ** 2))
+        res = 0
+        res += math.pow(self.x - x, 2)
+        res += math.pow(self.y - y, 2)
+        return math.sqrt(res)
 
 
 def main(csv_path):
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, sep=";")
     # Retrieve random position_sample row from dataset
-    position = df.sample()
-    return position
+    data = df.sample().to_numpy()[0]
+    print(data)
+    ind1 = Individu(data[0], data[1], data[2])
+    print(ind1.dist)
+    params = ind1.params
+    data = df.sample().to_numpy()[0]
+    print(data)
+    ind2 = Individu(data[0], data[1], data[2], params)
+    print(ind2.dist)
 
 # Algo génétique : generate individus
 # mutation
@@ -46,7 +55,7 @@ def main(csv_path):
 if __name__ == "__main__":
     # test()
 
-    print(main("position_sample.csv"))
+    main("position_sample.csv")
 
     # allSols = algoLoop()
     # print(*allSols, sep="\n")
