@@ -3,59 +3,71 @@ import pandas as pd
 import math
 
 class Individu:
-    def __init__(self, t, x, y, params=None):
-        self.t = t
-        self.params = params if params else [random.randint(-10, 10) for i in range(6)]
-        print(self.params)
-        self.x, self.y = self.calcul_pos()
-        self.dist = self.fitness(x, y)
+    def __init__(self, params=None):
+        self.params = params if params else [random.uniform(-10, 10) for i in range(6)]
 
-    # Check if queen has conflict
-    def calcul_pos(self):
-        x = self.params[0] * math.sin(self.params[1] * self.t + self.params[2])
-        y = self.params[3] * math.sin(self.params[4] * self.t + self.params[5])
-        return x, y
+    # Calculate position based on time (with formula)
+    def calcul_pos(self, t):
+        self.x = self.params[0] * math.sin(self.params[1] * t + self.params[2])
+        self.y = self.params[3] * math.sin(self.params[4] * t + self.params[5])
 
-    # Return euclidien distance
-    def fitness(self, x, y):
-        res = 0
-        res += math.pow(self.x - x, 2)
-        res += math.pow(self.y - y, 2)
-        return math.sqrt(res)
+    # Calculate euclidean distance between individual pos and data pos
+    def fitness(self, t, x, y):
+        self.calcul_pos(t)
+        res = math.pow(self.x - x, 2) + math.pow(self.y - y, 2)
+        self.dist = math.sqrt(res)
 
+    # Evaluate individual as a solution for data set based on threshold
+    def isGood(self, data_arr, threshold=5):
+        for ind, el in enumerate(data_arr):
+            self.fitness(el[0], el[1], el[2]) # Use t, x, y from data
+            if self.dist > threshold:
+                return False
+        return True
 
-def main(csv_path):
+    # TODO
+    def mutation(self):
+        pass
+
+    # TODO
+    def croisement(ind_arr):
+        pass
+
+    # TODO ?
+    def selection(self):
+        pass
+
+    # Caclulate pos based on params and compare to data pos
+    def calculate(data_arr, ind=None, params=None):
+        params = ind.params if ind else params
+        for ind, el in enumerate(data_arr):
+            x = params[0] * math.sin(params[1] * el[0] + params[2])
+            y = params[3] * math.sin(params[4] * el[0] + params[5])
+            print("data x : ", "%.2f" % el[1], "\ncalc x : ", "%.2f" % x)
+            print("data y : ", "%.2f" % el[2], "\ncalc y : ", "%.2f\n" % y)
+def main():
+    # Read csv file and transform to numpy array
+    csv_path = "position_sample.csv"
     df = pd.read_csv(csv_path, sep=";")
-    # Retrieve random position_sample row from dataset
-    data = df.sample().to_numpy()[0]
-    print(data)
-    ind1 = Individu(data[0], data[1], data[2])
-    print(ind1.dist)
-    params = ind1.params
-    data = df.sample().to_numpy()[0]
-    print(data)
-    ind2 = Individu(data[0], data[1], data[2], params)
-    print(ind2.dist)
+    data = df.to_numpy()
 
-# Algo génétique : generate individus
-# mutation
-# croisement
+    # TODO Generate a population ?
+    
+    # TODO Generic algorithm
+    print("Calculating...")
+    while True:
+        ind = Individu()
+        if ind.isGood(data):
+            break
 
-# Check individus with fitness function
+    # Solution found
+    print("Parameters found: ", ind.params)
 
-# Store individus
+    # Separate calculation (params found before)
+    params = [-2.5484, -8.3355, -4.2711, 3.7503, 9.4722, 2.0302]
+    Individu.calculate(data, params=params)
 
-# Use p1-p6 for the rest of position samples
-
-# Store distance between sample and calculated individus
-
-# Find the more accurate value
-
+    Individu.calculate(data, ind=ind)
 
 if __name__ == "__main__":
-    # test()
-
-    main("position_sample.csv")
-
-    # allSols = algoLoop()
-    # print(*allSols, sep="\n")
+    main()
