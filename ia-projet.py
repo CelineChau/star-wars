@@ -25,17 +25,21 @@ class Individu:
                 return False
         return True
 
-    # TODO
+    # Return mutated individual
     def mutation(self):
-        pass
+        self.params[random.randit(0, 5)] = random.uniform(-10, 10)
 
-    # TODO
+    # Return crossing individual
     def croisement(ind_arr):
-        pass
+        inds = random.choices(ind_arr, k=2)
+        return Individu(inds.params[:4] + inds.params[4:]), Individu(inds.params[:4] + inds.params[4:])
 
-    # TODO ?
-    def selection(self):
-        pass
+    # Return sublist
+    def selection(ind_arr, ub, lb):
+        subarr = []
+        subarr.extend(ind_arr[:ub])
+        subarr.extend(ind_arr[-lb:])
+        return subarr
 
     # Caclulate pos based on params and compare to data pos
     def calculate(data_arr, ind=None, params=None):
@@ -45,6 +49,7 @@ class Individu:
             y = params[3] * math.sin(params[4] * el[0] + params[5])
             print("data x : ", "%.2f" % el[1], "\ncalc x : ", "%.2f" % x)
             print("data y : ", "%.2f" % el[2], "\ncalc y : ", "%.2f\n" % y)
+            
 def main():
     # Read csv file and transform to numpy array
     csv_path = "position_sample.csv"
