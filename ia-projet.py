@@ -15,30 +15,52 @@ class Individu:
     def fitness(self, t, x, y):
         self.calcul_pos(t)
         res = math.pow(self.x - x, 2) + math.pow(self.y - y, 2)
-        self.dist = math.sqrt(res)
+        return math.sqrt(res)
 
     # Evaluate individual as a solution for data set based on threshold
-    def isGood(self, data_arr, threshold=5):
-        for ind, el in enumerate(data_arr):
-            self.fitness(el[0], el[1], el[2]) # Use t, x, y from data
-            if self.dist > threshold:
-                return False
-        return True
+    def isGood(self, threshold=5):
+        return (self.dist != None and self.dist < threshold)
+    
+    def toString(self):
+        dist = self.dist if self.dist else " "
+        print("params: ", self.params, " distance: ", dist)
+    
+    def displayPop(pop):
+        for ind in pop:
+            ind.toString()
+    
+    def evaluate(pop, data_arr):
+        median = 0
+        for individu in pop:
+            for ind, el in enumerate(data_arr):
+                print(type(individu))
+                median += individu.fitness(el[0], el[1], el[2])
+            individu.dist = median / len(data_arr)
+            
+        return sorted(pop, key=lambda x: x.dist)
+    
+    # Return list of individus
+    def create_pop(count):
+        pop = []
+        for i in range(count):
+            pop.append(Individu())
+               
+        return pop
 
     # Return mutated individual
     def mutation(self):
-        self.params[random.randit(0, 5)] = random.uniform(-10, 10)
+        self.params[random.randint(0,5)] = random.uniform(-10, 10)
 
     # Return crossing individual
-    def croisement(ind_arr):
-        inds = random.choices(ind_arr, k=2)
-        return Individu(inds.params[:4] + inds.params[4:]), Individu(inds.params[:4] + inds.params[4:])
+    def croisement(pop):
+        inds = random.choices(pop, k=2)
+        return Individu(inds[0].params[:4] + inds[1].params[4:]), Individu(inds[1].params[:4] + inds[0].params[4:])
 
     # Return sublist
-    def selection(ind_arr, ub, lb):
+    def selection(pop, ub, lb):
         subarr = []
-        subarr.extend(ind_arr[:ub])
-        subarr.extend(ind_arr[-lb:])
+        subarr.extend(pop[:ub])
+        subarr.extend(pop[-lb:])
         return subarr
 
     # Caclulate pos based on params and compare to data pos
@@ -56,23 +78,44 @@ def main():
     df = pd.read_csv(csv_path, sep=";")
     data = df.to_numpy()
 
-    # TODO Generate a population ?
+    # TODO Generate a population
+    nbIterations =  0
+    solutionTrouvee = False
+    pop = Individu.create_pop(25)
     
     # TODO Generic algorithm
     print("Calculating...")
-    while True:
-        ind = Individu()
-        if ind.isGood(data):
-            break
+#    while True:
+#        ind = Individu()
+#        if ind.isGood(data):
+#            break
+    
+    while not solutionTrouvee:
+        nbIterations += 1
+        evaluation = Individu.evaluate(pop, data)
+        if evaluation[0].isGood():
+            print("evaluation", evaluation[0].toString())
+            solutionTrouvee = True;
+        else :
+            select = Individu.selection(evaluation, 10, 4)
+            croises = []
+            croises.append(Individu.croisement(select))
+            mutes = []
+            for s in select:
+                mutes.append(Individu.mutation(s))
+            # Create new pop
+            newAlea = Individu.create_pop(5)
+            pop = select[:] + croises[:] + mutes[:] + newAlea[:]
+
 
     # Solution found
-    print("Parameters found: ", ind.params)
+    print("Solution found: ", evaluation[0].toString(), ", nbIterations: ", nbIterations)
 
     # Separate calculation (params found before)
-    params = [-2.5484, -8.3355, -4.2711, 3.7503, 9.4722, 2.0302]
-    Individu.calculate(data, params=params)
-
-    Individu.calculate(data, ind=ind)
+#    params = [-2.5484, -8.3355, -4.2711, 3.7503, 9.4722, 2.0302]
+#    Individu.calculate(data, params=params)
+#
+#    Individu.calculate(data, ind=ind)
 
 if __name__ == "__main__":
     main()
