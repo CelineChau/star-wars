@@ -29,13 +29,24 @@ class Individu:
     def displayPop(pop):
         for ind in pop:
             ind.toString()
-    
-    def evaluate(pop, data_arr):
-        for individu in pop:
-            moy = 0
-            for ind, el in enumerate(data_arr):
-                moy += individu.fitness(el[0], el[1], el[2])
-            individu.dist = moy / len(data_arr)
+
+    # Type "moyenne" ou "mediane"
+    def evaluate(pop, data_arr, type="moyenne"):
+        if type == "moyenne":
+            for individu in pop:
+                moy = 0
+                for ind, el in enumerate(data_arr):
+                    moy += individu.fitness(el[0], el[1], el[2])
+                individu.dist = moy / len(data_arr)
+        elif type == "mediane":
+            for individu in pop:
+                med_list = list()
+                for ind, el in enumerate(data_arr):
+                    med_list.append(individu.fitness(el[0], el[1], el[2]))
+                med_list.sort()
+                med_ind = int(math.ceil(len(med_list) / 2))
+                individu.dist = med_list[med_ind]
+
         return sorted(pop, key=lambda x: x.dist)
     
     # Return list of individus
@@ -82,8 +93,9 @@ def main():
     
     while not solutionTrouvee:
         nbIterations += 1
-        evaluation = Individu.evaluate(pop, data)
-        if evaluation[0].isGood(threshold=0.05):
+        # evaluation = Individu.evaluate(pop, data, type="moyenne")
+        evaluation = Individu.evaluate(pop, data, type="mediane")
+        if evaluation[0].isGood(threshold=0.1):
             solutionTrouvee = True
         else :
             select = Individu.selection(evaluation, 10, 4)
